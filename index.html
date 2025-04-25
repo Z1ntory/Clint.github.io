@@ -41,5 +41,21 @@
     <a href="https://z1ntory.github.io/">1. Guess the Secret Word Game</a>
     <a href="browser_dashboard.html">2. Browser Environment Dashboard</a>
   </section>
+
+  <script>
+    function updateBackgroundColor() {
+      const width = window.innerWidth;
+      if (width < 600) {
+        document.body.style.backgroundColor = 'blue';
+      } else if (width >= 600 && width <= 991) {
+        document.body.style.backgroundColor = 'green';
+      } else {
+        document.body.style.backgroundColor = 'orange';
+      }
+    }
+
+    window.addEventListener('load', updateBackgroundColor);
+    window.addEventListener('resize', updateBackgroundColor);
+  </script>
 </body>
 </html>
