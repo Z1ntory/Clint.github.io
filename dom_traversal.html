@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Interactive DOM Traversal and Manipulation</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      background-color: #f4f7f9;
+    }
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    h1, h2 {
+      margin-top: 0;
+    }
+    .node {
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .grandparent {
+      background-color: #fef6c9;
+    }
+    .parent {
+      background-color: #cbeafe;
+    }
+    .child {
+      background-color: #ffd6d6;
+    }
+    .highlight {
+      outline: 3px solid #e74c3c;
+      background-color: #fcf3cf !important;
+    }
+    .controls {
+      margin-top: 20px;
+    }
+    .controls button {
+      padding: 10px 12px;
+      margin: 5px;
+      border: none;
+      background-color: #3498db;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>DOM Traversal Interactive</h1>
+    <p><strong>Complete Name:</strong> Clint Harry P. Zape</p>
+    <p><strong>Sex:</strong> Male</p>
+    <p><strong>Address:</strong> Manila, Philippines</p>
+    <p><strong>Course, Year, and Section:</strong> BSIT 2-A</p>
+    <p><strong>Name of School:</strong> Partido State University</p>
+    <p><strong>Semester and Academic Year:</strong> 2nd Sem AY 2024–2025</p>
+    <p><strong>Subject Code and Title:</strong> PF2 - Event Driven Programming</p>
+    <p><strong>Instructor:</strong> Arjay Abio</p>
+  </header>
+
+  <div class="node grandparent" id="grandparent">
+    Grandparent
+    <div class="node parent">
+      Parent 1
+      <div class="node child">Child 1</div>
+      <div class="node child">Child 2</div>
+    </div>
+    <div class="node parent">
+      Parent 2
+      <div class="node child">Child 3</div>
+      <div class="node child">Child 4</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button onclick="traverseDown()">Traverse Down</button>
+    <button onclick="traverseUp()">Traverse Up</button>
+    <button onclick="traverseNextSibling()">Traverse Next Sibling</button>
+    <button onclick="traversePreviousSibling()">Traverse Previous Sibling</button>
+    <button onclick="addChild()">Add Child</button>
+    <button onclick="deleteCurrent()">Delete Current</button>
+  </div>
+
+  <script>
+    let selected = null;
+
+    document.querySelectorAll('.node').forEach(node => {
+      node.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (selected) selected.classList.remove('highlight');
+        selected = this;
+        selected.classList.add('highlight');
+      });
+    });
+
+    function traverseDown() {
+      if (selected && selected.children.length > 0) {
+        if (selected.classList.contains('child')) return;
+        selected.classList.remove('highlight');
+        selected = selected.querySelector('.node');
+        selected.classList.add('highlight');
+      }
+    }
+
+    function traverseUp() {
+      if (selected && selected.parentElement.closest('.node')) {
+        const parent = selected.parentElement.closest('.node');
+        selected.classList.remove('highlight');
+        selected = parent;
+        selected.classList.add('highlight');
+      }
+    }
+
+    function traverseNextSibling() {
+      if (selected && selected.nextElementSibling?.classList.contains('node')) {
+        selected.classList.remove('highlight');
+        selected = selected.nextElementSibling;
+        selected.classList.add('highlight');
+      }
+    }
+
+    function traversePreviousSibling() {
+      if (selected && selected.previousElementSibling?.classList.contains('node')) {
+        selected.classList.remove('highlight');
+        selected = selected.previousElementSibling;
+        selected.classList.add('highlight');
+      }
+    }
+
+    function addChild() {
+      if (!selected) return alert("Select a node first.");
+      if (selected.classList.contains('child')) {
+        alert("Cannot add child to a child node.");
+        return;
+      }
+
+      if (selected.classList.contains('grandparent')) {
+        const parent = document.createElement('div');
+        parent.className = 'node parent';
+        parent.textContent = 'New Parent';
+        const child1 = document.createElement('div');
+        child1.className = 'node child';
+        child1.textContent = 'New Child 1';
+        const child2 = document.createElement('div');
+        child2.className = 'node child';
+        child2.textContent = 'New Child 2';
+        parent.appendChild(child1);
+        parent.appendChild(child2);
+        selected.appendChild(parent);
+        [parent, child1, child2].forEach(addClickListener);
+      } else if (selected.classList.contains('parent')) {
+        const child = document.createElement('div');
+        child.className = 'node child';
+        child.textContent = 'New Child';
+        selected.appendChild(child);
+        addClickListener(child);
+      }
+    }
+
+    function deleteCurrent() {
+      if (!selected) return alert("Select a node first.");
+      if (selected.id === 'grandparent') {
+        alert("Cannot delete the grandparent node.");
+        return;
+      }
+      const toDelete = selected;
+      traverseUp();
+      toDelete.remove();
+    }
+
+    function addClickListener(node) {
+      node.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (selected) selected.classList.remove('highlight');
+        selected = this;
+        selected.classList.add('highlight');
+      });
+    }
+  </script>
+</body>
+</html>
